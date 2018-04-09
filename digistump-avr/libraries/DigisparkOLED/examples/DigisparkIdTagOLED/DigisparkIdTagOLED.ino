@@ -6,6 +6,7 @@
 #include "bitmaps.h"
 
 const int _interruptPin = 3;
+const int _powerPin = 1;
 // sda 0
 // scl 2
 
@@ -17,24 +18,29 @@ const char Arabic[] = { "marhabaan" };
 const char Portuguese[]  = { "   oi   " };
 const char Bengali[]  = { "salaam" };
 const char Russian[]  = { "zdravstvuyte" };
-const char Japanese[]  = { "konnichiwa" };
+const char Japanese[]  = { "konnichiwa " };
 const char Punjabi[]  = { "sata sri akala" };
 
 bool _interrupted = false;
 
 
 void setup() {
-  oled.begin();
   pinMode(_interruptPin, INPUT);
   digitalWrite(_interruptPin, HIGH);
+  pinMode(_powerPin, OUTPUT);
+  digitalWrite(_powerPin, LOW);
 } // setup
 
 void loop() {
     sleep();
     if (_interrupted){
+      setPower(true);
+      delay(40);
+      oled.begin();
       displayPage1();
       displayPage2();
       displayPage3();
+      setPower(false);
     }
 } // loop
 
@@ -55,6 +61,17 @@ void sleep() {
     sleep_disable();                        // Clear SE bit
     sei();                                  // Enable interrupts
 } // sleep
+
+void setPower(bool on){
+  if (on){
+    pinMode(_powerPin,OUTPUT);
+    digitalWrite(_powerPin,HIGH);
+  }else{
+    digitalWrite(_powerPin,LOW);  
+    delay(100);
+    pinMode(_powerPin,INPUT);
+  }
+}
 
 void displayPage1(){
   oled.clear(); //all black
